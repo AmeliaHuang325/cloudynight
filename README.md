@@ -1,40 +1,88 @@
-# Interactive Lighting & Data Collection with Arduino
+# Cloudy Night: Interactive Lighting & Sensor Data Collection in a Public Park
 
-![Rendering](https://github.com/nickkunz/cloudynight/blob/master/media/rendering.jpg)
+![Rendering of Cloudy Night](media/rendering.jpg)
 
-## Executive Summary
-Cloudy Night is an interactive lighting and data collecting prototype. The device was developed to provide illuminated feedback loops in low light conditions throughout the city while collecting unidentifiable data on its participants. The intent of the project was to assess if interactive lighting could enhance public park engagement and safety. 
+**Cloudy Night** is an interactive light installation that doubles as an anonymous sensor. A cloud-shaped lamp responds to people walking past it, and while doing so it logs infrared presence data that we analyzed to estimate park activity, direction of movement, and the presence of children.
 
-The first deployment occurred on May 4th, 2019 at Starlight Park in the Bronx, New York. The stakeholders of the project were the Bronx River Alliance with special consideration given to the people and parks they serve. After a 3 hour deployment of the prototype in the afternoon and evening, the collected data was analyzed for quality, focusing on interpretability and inference. 
+We built the prototype and deployed it for three hours at **Starlight Park in the Bronx (May 4, 2019)**, in partnership with the **Bronx River Alliance**.
 
-It was found that both directionality of human movement and the presence of children could be roughly approximated. The presence of children was used as a proxy for the perception of public safety, where it was assumed that mothers will not bring their children into environments that are perceived to be unsafe. 
+| | |
+|---|---|
+| **Context** | Urban Informatics II, Columbia University GSAPP (Spring 2019), advised by Dr. Anthony Vanky |
+| **Team** | Shuyang Huang, Nick Kunz, Shiori Osakata |
+| **Stack** | Arduino (C++), AK9753 4-channel IR presence sensor, WS2801 RGB LEDs, SD data logger + RTC, time-series analysis |
+| **Outputs** | [Report (PDF)](reports/cloudynightreport.pdf) · [Presentation (PDF)](reports/cloudynightpresentation.pdf) · [Video](https://www.youtube.com/watch?v=UFdZAbp3dc4) |
 
-Although this was assumed, and a rigorous analysis was not conducted to assess the number of occurrences of each event, it was more important that this project demonstrated that capturing these areas of interest was possible. It was determined that the Cloudy Night prototype was a useful device for creating interactive illuminances, while assessing rough approximations of public park safety and human movement through both directionality and the presence of children.
+## My Role
 
-The project was implemented in Arduino. The code include here is intended for execution on the Arduino platform. The operational hardware used in this prototype was: Arduino Uno, SD Data Logger Shield for Arduino, Sparkfun Qwiic Shield for Arduino, Sparkfun Qwiic Connect Cables, SparkFun Human Presence Sensor Breakout, Adafruit 12mm Diffused Thin Digital RGB LED Pixels (Strand of 25).
+- Wrote the Arduino firmware for sensor reading, LED feedback, and SD/RTC data logging
+- Designed the analysis of the IR data (directionality and child-presence metrics) and produced the plots
+- Planned the field deployment with the Bronx River Alliance and ran data collection on site
 
-This work was completed with Shuyang Huang and Shiori Osakata in partial fulfillment for the course Urban Informatics II at Columbia University GSAPP in 2019. A video of the making of Cloudy Night can be found at https://www.youtube.com/watch?v=UFdZAbp3dc4&t=0s.
+## Research Questions
+
+1. Can illuminating dimly lit park spaces with interactive lighting help people feel safer?
+2. Can playful, illuminated interactivity increase park engagement?
+3. Can a low-cost, privacy-preserving sensor detect patterns such as movement direction and the presence of children? Children's presence was used as a proxy for perceived safety.
 
 ## Concept
-![Sketch](https://github.com/nickkunz/cloudynight/blob/master/media/sketch.png)
-![Interactivity](https://github.com/nickkunz/cloudynight/blob/master/media/interaction.png)
 
-## Realization 
-![Concept](https://github.com/nickkunz/cloudynight/blob/master/media/concept.png)
-![Implementation1](https://github.com/nickkunz/cloudynight/blob/master/media/implementation1.png)
+When someone comes within about 5 m of the cloud, the light inside changes color, which creates a visible feedback loop between people and the space.
 
-## Process & Technology
-![Sensor Detail](https://github.com/nickkunz/cloudynight/blob/master/media/sensordetail.jpg)
-![Microcontroller Stack](https://github.com/nickkunz/cloudynight/blob/master/media/stack.jpg)
-![LED Lights](https://github.com/nickkunz/cloudynight/blob/master/media/leds.jpg)
-![Tech Schematic](https://github.com/nickkunz/cloudynight/blob/master/media/schematic.jpg)
-![Cloud](https://github.com/nickkunz/cloudynight/blob/master/media/cloud.jpg)
+![Concept sketch](media/sketch.png)
+![Interaction diagram](media/interaction.png)
+![Section showing the sensor's field of view](media/concept.png)
 
-## Implementation
-![Implementation0](https://github.com/nickkunz/cloudynight/blob/master/media/implementation.jpeg)
-![Implementation2](https://github.com/nickkunz/cloudynight/blob/master/media/implementation2.jpg)
+## How It Works
 
-## Data Collection
-![Plot1](https://github.com/nickkunz/cloudynight/blob/master/media/humanplot.jpg)
-![Plot2](https://github.com/nickkunz/cloudynight/blob/master/media/directionplot.jpg)
-![Plot3](https://github.com/nickkunz/cloudynight/blob/master/media/childrenplot.jpg)
+![System schematic](media/schematic.jpg)
+
+- **Sensing.** A SparkFun AK9753 human presence sensor has four IR channels facing up, left, down, and right. It records body heat without a camera, so **no identifiable data is collected**.
+- **Feedback.** The firmware sums the four channels and maps the total to five lighting states. The idle state is a slow blue cycle. As more presence is detected, the lamp moves through progressively faster, multi-color wipes (thresholds of 1300, 2400, 3500, and 4500).
+- **Logging.** Each reading is written to `cloudy1.csv` on an SD card with all four IR values, temperature, and an RTC timestamp.
+
+Firmware: [`cloudynight.ino`](cloudynight.ino)
+
+**Hardware:** Arduino Uno · SD Data Logger Shield · DS3231 RTC · SparkFun Qwiic Shield + cables · SparkFun AK9753 Human Presence Sensor · Adafruit 12 mm WS2801 RGB LED pixels (strand of 25)
+
+| Sensor | Microcontroller stack | LEDs |
+|---|---|---|
+| ![Sensor detail](media/sensordetail.jpg) | ![Microcontroller stack](media/stack.jpg) | ![LED strand](media/leds.jpg) |
+
+## Deployment
+
+Starlight Park, Bronx, NY. May 4, 2019, 5:15–8:15 PM, at dusk on a shared pedestrian path next to a playground and sports courts.
+
+![Deployed in Starlight Park](media/implementation1.png)
+![Cloudy Night at dusk](media/implementation.jpeg)
+
+## Analysis & Findings
+
+**1. Overall presence.** Averaging all four IR channels over the three-hour deployment shows general activity trends. All raw data is shown, including noise and outliers.
+
+![Human presence over 3 hours](media/humanplot.jpg)
+
+**2. Direction of movement.** Comparing the left (2) and right (4) channels approximates which side of the device people were on and how they moved past it. In the example window (17:30–17:35), people moved from right to left, perpendicular to the path.
+
+![Directionality plot](media/directionplot.jpg)
+
+**3. Presence of children.** After normalizing the top (1) and bottom (3) channels, a stronger bottom-sensor signal suggests a shorter person nearby. Spikes in this metric (for example, around 18:20–18:23) were treated as likely child presence.
+
+![Child presence metric](media/childrenplot.jpg)
+
+**Takeaway.** A single low-cost, camera-free sensor could roughly capture both movement direction and child presence. That makes it a plausible way to measure park use and perceived safety without collecting identifiable data.
+
+## Limitations & Next Steps
+
+This was a proof of concept, not a rigorous study:
+
+- One device, one location, and one three-hour session, with **no control condition** (for example, the same spot with the light off).
+- Event counts were not formally validated against ground truth, such as manual observation counts.
+- Children's presence as a proxy for perceived safety is an assumption, not a measured outcome.
+- Sensor range and accuracy are limited, and the lighting thresholds were set by hand.
+
+Natural next steps would be multiple devices along a path, longer deployments, a light-on/light-off comparison, and calibrating the sensor metrics against manual counts.
+
+## Acknowledgments
+
+Built with Nick Kunz and Shiori Osakata for Urban Informatics II at Columbia GSAPP under Dr. Anthony Vanky. Thanks to the Bronx River Alliance. The LED driver code is adapted from Adafruit's WS2801 example (BSD license).
