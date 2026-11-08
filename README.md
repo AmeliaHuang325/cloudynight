@@ -6,9 +6,8 @@
 
 We built the prototype and deployed it for three hours at **Starlight Park in the Bronx (May 4, 2019)**, in partnership with the **Bronx River Alliance**.
 
-| | |
-|---|---|
 | **Context** | Urban Informatics II, Columbia University GSAPP (Spring 2019), advised by Dr. Anthony Vanky |
+|---|---|
 | **Team** | Shuyang Huang, Nick Kunz, Shiori Osakata |
 | **Stack** | Arduino (C++), AK9753 4-channel IR presence sensor, WS2801 RGB LEDs, SD data logger + RTC, time-series analysis |
 | **Outputs** | [Report (PDF)](reports/cloudynightreport.pdf) · [Presentation (PDF)](reports/cloudynightpresentation.pdf) · [Video](https://www.youtube.com/watch?v=UFdZAbp3dc4) |
